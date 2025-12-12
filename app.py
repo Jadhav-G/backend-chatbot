@@ -7,7 +7,7 @@
 import os
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from flask_cors import CORS
-# from MedQuard import answer_query
+from MedQuard import answer_query
 from datetime import timedelta
 import sqlite3
 import re
@@ -17,8 +17,12 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 
 HF_MODEL = "Ganesh-Jadhav/Virtual-Healthcare-Assistant"
 
-tokenizer = AutoTokenizer.from_pretrained(HF_MODEL)
-model = AutoModelForCausalLM.from_pretrained(HF_MODEL)
+# tokenizer = AutoTokenizer.from_pretrained(HF_MODEL)
+# model = AutoModelForCausalLM.from_pretrained(HF_MODEL)
+
+tokenizer = AutoTokenizer.from_pretrained(HF_MODEL, trust_remote_code=True)
+model = AutoModelForCausalLM.from_pretrained(HF_MODEL, low_cpu_mem_usage=True)
+
 
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
