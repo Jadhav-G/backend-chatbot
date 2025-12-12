@@ -7,18 +7,42 @@
 
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for
 from flask_cors import CORS
-from MedQuard import answer_query
+# from MedQuard import answer_query
 from datetime import timedelta
 import sqlite3
 import re
 
 # model_path = "gpt2"
+from transformers import AutoTokenizer, AutoModelForCausalLM
+
+HF_MODEL = "Ganesh-Jadhav/Virtual-Healthcare-Assistant"
+
+tokenizer = AutoTokenizer.from_pretrained(HF_MODEL)
+model = AutoModelForCausalLM.from_pretrained(HF_MODEL)
+
 
 app = Flask(__name__, static_folder='static', template_folder='templates')
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
+
 app.secret_key = "mediqa_secret_key"
 app.permanent_session_lifetime = timedelta(minutes=60)
 DB_PATH = "mediqa.db"
+
+
+@app.post("/ask")
+def ask():
+    data = request.get_json()
+    question = data.get("question", "")
+
+    if not question:
+        return {"answer": "Please provide a question."}
+
+    inputs = tokenizer(question, return_tensors="pt")
+    outputs = model.generate(**inputs, max_length=200)
+    answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+    return {"answer": answer}
+
 
 # -------------------- Helper Function --------------------
 def get_db_connection():
