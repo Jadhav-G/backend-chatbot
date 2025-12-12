@@ -29,19 +29,19 @@ app.permanent_session_lifetime = timedelta(minutes=60)
 DB_PATH = "mediqa.db"
 
 
-@app.post("/ask")
-def ask():
-    data = request.get_json()
-    question = data.get("question", "")
+# @app.post("/ask")
+# def ask():
+#     data = request.get_json()
+#     question = data.get("question", "")
 
-    if not question:
-        return {"answer": "Please provide a question."}
+#     if not question:
+#         return {"answer": "Please provide a question."}
 
-    inputs = tokenizer(question, return_tensors="pt")
-    outputs = model.generate(**inputs, max_length=200)
-    answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
+#     inputs = tokenizer(question, return_tensors="pt")
+#     outputs = model.generate(**inputs, max_length=200)
+#     answer = tokenizer.decode(outputs[0], skip_special_tokens=True)
 
-    return {"answer": answer}
+#     return {"answer": answer}
 
 
 # -------------------- Helper Function --------------------
